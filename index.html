@@ -913,14 +913,13 @@
                 player.vy += GRAVITY; player.x += player.vx; player.y += player.vy;
                 if (player.x < 0) player.x = 0; if (player.x + player.w > WORLD_WIDTH) player.x = WORLD_WIDTH - player.w;
 
-                // Sistem Checkpoint & Respawn (Mencegah jatuh ke void/kolam)
+                // Sistem Checkpoint & Respawn
                 if (player.grounded) {
                     let currentPlat = platforms.find(p => 
                         player.x + player.w/2 >= p.x && 
                         player.x + player.w/2 <= p.x + p.w &&
                         Math.abs((player.y + player.h) - p.y) <= 12
                     );
-                    // Update checkpoint jika berdiri di platform besar yang aman
                     if (currentPlat && currentPlat.w >= 100 && currentPlat.y <= 170) {
                         checkpoint.x = player.x;
                         checkpoint.y = player.y - 5;
@@ -1027,14 +1026,19 @@
                 });
 
                 // Door
+                const houseDoor = { x: 5475, y: 120, w: 30, h: 50 };
                 if (player.x < houseDoor.x + houseDoor.w && player.x + player.w > houseDoor.x && player.y < houseDoor.y + houseDoor.h && player.y + player.h > houseDoor.y) {
                     if (keysCollected === 4) {
                         gameState = 'TRANSITION'; document.getElementById('flashOverlay').style.transition = "opacity 2s"; document.getElementById('flashOverlay').style.opacity = 1;
                         SFX.win();
                         setTimeout(() => {
                             gameState = 'ENDING'; document.querySelector('.hud-container').style.display = 'none';
-                            camera.position.set(8000, -60, 220); camera.lookAt(8000, -80, 0);
-                            player3D.group.position.set(7900, -104, -5); player3D.group.rotation.y = Math.PI / 2; 
+                            camera.position.set(8000, -60, 220); camera.lookAt(8000, -80, 0); 
+                            
+                            // Pindahkan karakter pemain ke dalam ruangan ending
+                            player3D.group.position.set(7900, -104, -5); 
+                            player3D.group.rotation.y = Math.PI / 2;
+                            
                             document.getElementById('flashOverlay').style.transition = "opacity 1.5s"; document.getElementById('flashOverlay').style.opacity = 0;
                             endingPhase = 0; 
                         }, 2000);
@@ -1075,13 +1079,14 @@
                     scene.background = scene.fog.color;
                 }
 
-                // Dynamic Camera
+                // Dynamic Camera (Zoomed Out to Z = 350)
                 let targetCamX = player.x;
                 if(targetCamX < 150) targetCamX = 150; if(targetCamX > WORLD_WIDTH - 150) targetCamX = WORLD_WIDTH - 150;
                 camera.position.x += (targetCamX - camera.position.x) * 0.1;
                 let targetCamY = -player.y + 20; 
                 camera.position.y += (targetCamY - camera.position.y) * 0.1;
-                camera.position.z = 220; camera.lookAt(camera.position.x, camera.position.y - 20, 0);
+                camera.position.z = 350; 
+                camera.lookAt(camera.position.x, camera.position.y - 20, 0);
                 dirLight.position.x = camera.position.x + 80;
 
             } else if (gameState === 'ASSEMBLING') {
@@ -1150,7 +1155,9 @@
                     }
 
                     // FIREWORKS
-                    if(Math.random() < 0.04) spawnFireworks(8000 + (Math.random()-0.5)*150, -50 + Math.random()*80);
+                    if(Math.random() < 0.04 && typeof THREE.MeshBasicMaterial !== 'undefined') {
+                         spawnFireworks(8000 + (Math.random()-0.5)*150, -50 + Math.random()*80);
+                    }
 
                     if(Math.random() < 0.01) blinkCharacter(player3D);
                     if(Math.random() < 0.01) blinkCharacter(boy3D);
