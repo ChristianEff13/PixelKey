@@ -584,7 +584,7 @@
                 else if (s.type === 'tugu_umn') {
                     mesh = new THREE.Group();
                     let base = createBox(50, 10, 50, new THREE.MeshStandardMaterial({color: 0x333333})); base.position.y = -s.h/2 + 5;
-                    let hexGeo = new THREE.CylinderGeometry(6, 20, s.h-10, 6);
+                    let hexGeo = new THREE.CylinderGeometry(14, 20, s.h-10, 6); // WIDENED TOP (radius 14)
                     let hexMat = new THREE.MeshStandardMaterial({color: 0x111111, roughness: 0.3, flatShading: true});
                     let hex = new THREE.Mesh(hexGeo, hexMat); hex.position.y = 5;
                     mesh.add(base, hex); mesh.position.set(s.x + s.w/2, -(s.y + s.h/2), -30);
@@ -803,6 +803,37 @@
             let backWall = createBox(250, 150, 10, wallMat); backWall.position.set(0, 75, -60);
             let floor = createBox(250, 10, 150, floorMat); floor.position.set(0, 0, 0); roomGroup.add(backWall, floor);
 
+            // DECORATIONS: Bunting Flags
+            let flagsGrp = new THREE.Group();
+            let flagColors = [0xff7675, 0x74b9ff, 0x55efc4, 0xf1c40f, 0xa29bfe, 0xff7675, 0x74b9ff, 0x55efc4];
+            for(let i=0; i<8; i++) {
+                let flag = createBox(10, 15, 2, new THREE.MeshBasicMaterial({color: flagColors[i]}), false);
+                flag.rotation.z = Math.PI / 4;
+                flag.position.set(-70 + i*20, 120 - Math.abs(i-3.5)*4, -54); 
+                flagsGrp.add(flag);
+            }
+            roomGroup.add(flagsGrp);
+
+            // DECORATIONS: Number "20"
+            let numMat = new THREE.MeshStandardMaterial({color: 0xf1c40f, emissive: 0x664400, roughness: 0.3, metalness: 0.8});
+            let n2 = new THREE.Group();
+            let b2_1 = createBox(20, 6, 4, numMat); b2_1.position.set(0, 24, 0); 
+            let b2_2 = createBox(6, 12, 4, numMat); b2_2.position.set(7, 15, 0); 
+            let b2_3 = createBox(20, 6, 4, numMat); b2_3.position.set(0, 6, 0);  
+            let b2_4 = createBox(6, 12, 4, numMat); b2_4.position.set(-7, -3, 0); 
+            let b2_5 = createBox(20, 6, 4, numMat); b2_5.position.set(0, -12, 0); 
+            n2.add(b2_1, b2_2, b2_3, b2_4, b2_5); n2.position.set(-15, 80, -54); 
+            
+            let n0 = new THREE.Group();
+            let b0_1 = createBox(20, 6, 4, numMat); b0_1.position.set(0, 24, 0); 
+            let b0_2 = createBox(6, 30, 4, numMat); b0_2.position.set(-7, 6, 0); 
+            let b0_3 = createBox(6, 30, 4, numMat); b0_3.position.set(7, 6, 0); 
+            let b0_4 = createBox(20, 6, 4, numMat); b0_4.position.set(0, -12, 0); 
+            n0.add(b0_1, b0_2, b0_3, b0_4); n0.position.set(15, 80, -54); 
+            
+            roomGroup.add(n2, n0);
+
+            // Presents & Cake
             let present = createBox(16, 16, 16, new THREE.MeshStandardMaterial({color: 0xff0000, roughness: 0.5}));
             let rMat = new THREE.MeshStandardMaterial({color: 0xf1c40f, metalness: 0.5});
             let ribbon1 = createBox(17, 17, 3, rMat); let ribbon2 = createBox(3, 17, 17, rMat);
