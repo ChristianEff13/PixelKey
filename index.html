@@ -419,6 +419,13 @@
             mesh.castShadow = cast; mesh.receiveShadow = true; return mesh;
         }
 
+        // Fungsi createRoundedBoxMesh kini langsung menggunakan BoxGeometry untuk mencegah tekstur piksel rusak
+        function createRoundedBoxMesh(w, h, d, radius, mat) {
+            const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+            mesh.castShadow = true; mesh.receiveShadow = true;
+            return mesh;
+        }
+
         function build3DWorld() {
             // Tutup semua void dengan lantai dasar visual di bagian paling bawah
             platforms.push({x: -500, y: 250, w: 7000, h: 100, type: 'ground'});
@@ -427,7 +434,9 @@
             platforms.push({x: -50, y: 170, w: 1050, h: 60, type: 'indoor_ground'}); 
             sceneries.push({x: 150, y: 40, w: 250, h: 70, type: 'whiteboard'}); 
             sceneries.push({x: 100, y: 130, w: 60, h: 40, type: 'teacher_desk'}); 
-            for(let i=250; i<=810; i+=80) { sceneries.push({x: i, y: 140, w: 20, h: 30, type: 'student_desk'}); } 
+            
+            // Bangku siswa diperapat (i+=55)
+            for(let i=250; i<=850; i+=55) { sceneries.push({x: i, y: 140, w: 20, h: 30, type: 'student_desk'}); } 
             
             platforms.push({x: 350, y: 110, w: 64, h: 16, type: 'plat'});
             platforms.push({x: 480, y: 80, w: 64, h: 16, type: 'plat'});
@@ -475,16 +484,17 @@
 
             // BACKGROUND PARK (Mountains)
             for (let i = 2000; i <= 4000; i += 300) {
-                let mH = 400 + Math.random() * 400; 
-                let mGeo = new THREE.ConeGeometry(300 + Math.random()*200, mH, 8);
+                let mH = 1500; // Ekstra panjang ke bawah agar akar tidak terlihat melayang
+                let mGeo = new THREE.ConeGeometry(800 + Math.random()*400, mH, 8); // Lebar base ditambah agar tidak seperti duri
                 let mMat = new THREE.MeshStandardMaterial({color: 0x27ae60, flatShading: true, roughness: 1});
                 let m = new THREE.Mesh(mGeo, mMat);
-                m.position.set(i, -250 + mH/2, -800 - Math.random()*200); 
+                let peakHeight = 50 + Math.random() * 250;
+                m.position.set(i, peakHeight - mH/2, -800 - Math.random()*200); 
                 scene.add(m);
             }
 
             // --- ZONE 3: Apartment & Pool (3800 - 5000) ---
-            sceneries.push({x: 3800, y: -50, w: 1200, h: 300, type: 'apartment_bg'});
+            sceneries.push({x: 3800, y: -50, w: 1200, h: 800, type: 'apartment_bg'});
             platforms.push({x: 3800, y: 170, w: 250, h: 60, type: 'indoor_ground'});
             platforms.push({x: 4050, y: 140, w: 60, h: 16, type: 'plat'});
             platforms.push({x: 4120, y: 110, w: 60, h: 16, type: 'plat'});
@@ -511,11 +521,12 @@
 
             // BACKGROUND CITY (Skyline behind apartment)
             for (let i = 3500; i <= 5200; i += 200) {
-                let cH = 400 + Math.random() * 400; 
+                let cH = 1500; // Ekstra panjang ke bawah agar akar tidak terlihat melayang
                 let cGeo = new THREE.BoxGeometry(150 + Math.random()*150, cH, 50);
                 let cMat = new THREE.MeshStandardMaterial({color: 0x2c3e50, roughness: 0.8});
                 let c = new THREE.Mesh(cGeo, cMat);
-                c.position.set(i, -250 + cH/2, -600 - Math.random()*100); 
+                let roofHeight = 50 + Math.random() * 300;
+                c.position.set(i, roofHeight - cH/2, -600 - Math.random()*100); 
                 scene.add(c);
             }
 
